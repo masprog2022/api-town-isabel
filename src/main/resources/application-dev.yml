@@ -21,7 +21,7 @@ server:
   # Springdoc OpenApi 3.1 & Swagger 3
 springdoc:
   swagger-ui:
-    path: /docs-park.html
+    path: /docs-town.html
   api-docs:
-    path: /docs-park
+    path: /docs-town
 packagesToScan: com.masprogtechs.apitownisabel.controller
