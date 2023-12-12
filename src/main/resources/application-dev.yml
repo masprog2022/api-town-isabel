@@ -1,0 +1,27 @@
+spring:
+  security:
+    enabled: false
+  application:
+    name: gest-town-isabel
+  datasource:
+    url: jdbc:postgresql://localhost:5432/api_town
+    password: admin
+    username: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    generate-ddl: true
+server:
+  port: 8084 #set your port
+
+  # Springdoc OpenApi 3.1 & Swagger 3
+springdoc:
+  swagger-ui:
+    path: /docs-park.html
+  api-docs:
+    path: /docs-park
+packagesToScan: com.masprogtechs.apitownisabel.controller
