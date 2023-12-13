@@ -8,11 +8,13 @@ import com.masprogtechs.apitownisabel.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -23,22 +25,29 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "Criar um novo usuário", description = "Criar um novo usuário",
+    @Operation(summary = "Criar um novo usuário", description = "Criar um novo usuário. " +
+            "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
+            security = @SecurityRequirement(name = "security"),
+
             responses = {
                     @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso",
                             content = @Content(mediaType = "application/json"))
             })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserCreateDto createDto){
         User user = userService.save(UserMapper.toUser(createDto));
         return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toDto(user));
     }
-    @Operation(summary = "Listar usuário pelo username", description = "Listar usuário pelo username",
+    @Operation(summary = "Listar usuário pelo username", description = "Listar usuário pelo username" +
+            "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Recurso listado com sucesso",
                             content = @Content(mediaType = "application/json"))
             })
     @GetMapping("/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> getByUsername(@PathVariable String username){
         User user = userService.findByUsername(username);
         return ResponseEntity.ok(UserMapper.toDto(user));

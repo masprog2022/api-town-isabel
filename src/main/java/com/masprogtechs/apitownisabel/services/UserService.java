@@ -1,5 +1,6 @@
 package com.masprogtechs.apitownisabel.services;
 
+import com.masprogtechs.apitownisabel.enums.Role;
 import com.masprogtechs.apitownisabel.exception.EntityRuntimeException;
 import com.masprogtechs.apitownisabel.exception.UsernameUniqueViolationException;
 import com.masprogtechs.apitownisabel.models.User;
@@ -30,6 +31,11 @@ public class UserService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(
                 () -> new EntityRuntimeException(String.format("Usuário com username %s não encontrado.", username)));
+    }
+
+    @Transactional(readOnly = true)
+    public Role findRoleByUsername(String username) {
+        return userRepository.findRoleByUsername(username);
     }
 
 
