@@ -7,6 +7,7 @@ import com.masprogtechs.apitownisabel.models.ErrorMessage;
 import com.masprogtechs.apitownisabel.models.User;
 import com.masprogtechs.apitownisabel.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/users")
@@ -26,6 +29,22 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Listar todos os usuários cadastrados", description = "Requisição exige um Bearer Token. Acesso restrito a ADMIN",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Lista com todos os usuários cadastrados",
+                            content = @Content(mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
+                    @ApiResponse(responseCode = "403", description = "Usuário sem permissão para acessar esse recurso",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+            })
+    public ResponseEntity<List<UserResponseDto>> getAll(){
+        List<User> users = userService.findAll();
+        return ResponseEntity.ok(UserMapper.toListDto(users));
+    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') OR (hasRole('MORADOR') AND #id == authentication.principal.id)")
