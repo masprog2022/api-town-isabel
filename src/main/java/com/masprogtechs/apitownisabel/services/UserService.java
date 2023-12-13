@@ -7,6 +7,7 @@ import com.masprogtechs.apitownisabel.models.User;
 import com.masprogtechs.apitownisabel.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +50,17 @@ public class UserService {
     @Transactional(readOnly = true)
     public Role findRoleByUsername(String username) {
         return userRepository.findRoleByUsername(username);
+    }
+
+    public void deleteUser(Long id){
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) {
+            throw new EntityRuntimeException(String.format("Usuaário com identificador %s não encontrado", id));
+        }
+
+        userRepository.deleteById(id);
+
     }
 
 }
