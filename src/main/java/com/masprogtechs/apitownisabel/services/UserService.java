@@ -47,6 +47,9 @@ public class UserService {
                 () -> new EntityRuntimeException(String.format("Usuário com username %s não encontrado.", username)));
     }
 
+
+
+
     @Transactional(readOnly = true)
     public Role findRoleByUsername(String username) {
         return userRepository.findRoleByUsername(username);
@@ -61,6 +64,19 @@ public class UserService {
 
         userRepository.deleteById(id);
 
+    }
+    public User update(User user) {
+        User userUpdate  = findById(user.getId());
+        if (userUpdate == null) {
+            throw new EntityRuntimeException(String.format("Usuário com identificador %s não encontrado", user.getId()));
+        }
+
+        user.setFullName(user.getFullName());
+        user.setUsername(user.getUsername());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(user.getRole());
+
+        return userRepository.save(user);
     }
 
 }

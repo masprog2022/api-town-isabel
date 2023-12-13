@@ -2,6 +2,7 @@ package com.masprogtechs.apitownisabel.controllers;
 
 import com.masprogtechs.apitownisabel.dtos.UserCreateDto;
 import com.masprogtechs.apitownisabel.dtos.UserResponseDto;
+import com.masprogtechs.apitownisabel.dtos.UserUpdateDto;
 import com.masprogtechs.apitownisabel.mapper.UserMapper;
 import com.masprogtechs.apitownisabel.models.ErrorMessage;
 import com.masprogtechs.apitownisabel.models.User;
@@ -51,11 +52,11 @@ public class UserController {
     @Operation(summary = "Listar um usuário pelo id", description = "Requisição exige um Bearer Token. Acesso restrito a ADMIN | CUSTOMER",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso",
+                    @ApiResponse(responseCode = "200", description = "Usuário recuperado com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
                     @ApiResponse(responseCode = "403", description = "Usuário sem permissão para acessar esse recurso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "404", description = "Recurso não encontrado",
+                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
     public ResponseEntity<UserResponseDto> getById(@PathVariable Long id){
@@ -69,7 +70,7 @@ public class UserController {
             security = @SecurityRequirement(name = "security"),
 
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso",
+                    @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso",
                             content = @Content(mediaType = "application/json"))
             })
     @PostMapping
@@ -82,7 +83,7 @@ public class UserController {
             "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Recurso listado com sucesso",
+                    @ApiResponse(responseCode = "200", description = "Usuário listado com sucesso",
                             content = @Content(mediaType = "application/json"))
             })
     @GetMapping("/username/{username}")
@@ -96,9 +97,9 @@ public class UserController {
             "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Recurso apagado com sucesso",
+                    @ApiResponse(responseCode = "204", description = "Usuário apagado com sucesso",
                             content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "404", description = "Recurso não encontrado",
+                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             })
     @DeleteMapping("/{id}")
@@ -107,6 +108,19 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+    @Operation(summary = "Actualizar um usuário", description = "Actualizar um usuário. " +
+            "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
+            security = @SecurityRequirement(name = "security"),
 
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Usuário actualizado com sucesso",
+                            content = @Content(mediaType = "application/json"))
+            })
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponseDto> updaterUser(@PathVariable Long id, @RequestBody UserUpdateDto userUpdateDto){
+        User user = userService.update(UserMapper.toUpdateUser2(id, userUpdateDto));
+        return ResponseEntity.ok(UserMapper.toDto(user));
+    }
 
 }
