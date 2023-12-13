@@ -18,6 +18,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
+    public User findById(Long id){
+        return userRepository.findById(id).orElseThrow(
+                () -> new EntityRuntimeException(String.format("Usuário com o id %s não encontrado.", id)));
+    }
+
     public User save(User user){
         try{
             user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -37,6 +43,5 @@ public class UserService {
     public Role findRoleByUsername(String username) {
         return userRepository.findRoleByUsername(username);
     }
-
 
 }

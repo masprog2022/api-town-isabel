@@ -16,7 +16,7 @@ public class SpringDocOpenApiConfig {
         return new OpenAPI()
                 .components(new Components().addSecuritySchemes("security", securityScheme()))
                 .info(new Info()
-                        .title("REST API - Sistema para gerenciar pagamento de quotas - Vila Isabel")
+                        .title("REST API - Pagamento de quotas - Vila Isabel")
                         .version("v1")
                         .description("Api RestFull para para gerenciar pagamento de quotas - Vila Isabel")
                         .termsOfService("https://about-mauro.netlify.app/")
