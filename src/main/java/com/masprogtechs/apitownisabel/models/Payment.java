@@ -1,44 +1,42 @@
 package com.masprogtechs.apitownisabel.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.masprogtechs.apitownisabel.enums.Role;
 import jakarta.persistence.*;
-import jakarta.persistence.Id;
 import lombok.*;
-import org.springframework.data.annotation.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Entity
-@Table(name = "tb_users")
-public class User {
+@Table(name = "tb_payments")
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "full_name", nullable = false, length = 200)
-    private String fullName;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "user_name", nullable = false, unique = true, length = 100)
-    private String username;
-
-    @JsonIgnore
-    @Column(name = "password", nullable = false, length = 200)
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 25)
-    private Role role;
-
+    @ManyToMany
+    @JoinTable(
+            name = "payment_month",
+            joinColumns = @JoinColumn(name = "payment_id"),
+            inverseJoinColumns = @JoinColumn(name = "month_id")
+    )
+    private List<Month> months;
+    private Integer year;
+    private BigDecimal amountPaid;
+    private Boolean paid;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -65,8 +63,8 @@ public class User {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id.equals(user.id);
+        Payment payment = (Payment) o;
+        return Objects.equals(id, payment.id);
     }
 
     @Override
