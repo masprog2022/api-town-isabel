@@ -1,6 +1,7 @@
 package com.masprogtechs.apitownisabel.config;
 
 import com.masprogtechs.apitownisabel.exception.EntityRuntimeException;
+import com.masprogtechs.apitownisabel.exception.IllegalArgumentException;
 import com.masprogtechs.apitownisabel.exception.UsernameUniqueViolationException;
 import com.masprogtechs.apitownisabel.models.ErrorMessage;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,4 +37,17 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> illegalArgumentException(RuntimeException ex,
+                                                               HttpServletRequest request){
+
+        log.error("Api error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+
 }

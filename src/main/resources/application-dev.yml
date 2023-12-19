@@ -25,3 +25,4 @@ springdoc:
   api-docs:
     path: /docs-town
 packagesToScan: com.masprogtechs.apitownisabel.controller
+

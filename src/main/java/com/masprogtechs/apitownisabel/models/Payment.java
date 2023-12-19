@@ -8,7 +8,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.Year;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -34,9 +34,11 @@ public class Payment {
             inverseJoinColumns = @JoinColumn(name = "month_id")
     )
     private List<Month> months;
+
     private Integer year;
     private BigDecimal amountPaid;
     private Boolean paid;
+
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

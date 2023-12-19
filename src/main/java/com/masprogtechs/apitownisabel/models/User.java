@@ -39,7 +39,6 @@ public class User {
     @Column(name = "role", nullable = false, length = 25)
     private Role role;
 
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")

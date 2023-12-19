@@ -3,9 +3,10 @@ package com.masprogtechs.apitownisabel.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Entity
 @Table(name = "tb_months")
@@ -18,5 +19,9 @@ public class Month {
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+
+
+
 
 }

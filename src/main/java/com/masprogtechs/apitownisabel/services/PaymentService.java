@@ -2,6 +2,7 @@ package com.masprogtechs.apitownisabel.services;
 
 import com.masprogtechs.apitownisabel.dtos.PaymentCreateDto;
 import com.masprogtechs.apitownisabel.exception.EntityRuntimeException;
+import com.masprogtechs.apitownisabel.exception.IllegalArgumentException;
 import com.masprogtechs.apitownisabel.models.Month;
 import com.masprogtechs.apitownisabel.models.Payment;
 import com.masprogtechs.apitownisabel.models.User;
@@ -12,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -23,21 +27,35 @@ public class PaymentService {
     private final MonthRepository monthRepository;
 
     public Payment makePayment(PaymentCreateDto paymentCreateDto) {
-        // Validação do usuário
-        User user = userRepository.findById(paymentCreateDto.getUserId())
-                .orElseThrow(() -> new EntityRuntimeException("Usuário não encontrado"));
 
-        // Validação dos meses
+        User user = userRepository.findById(paymentCreateDto.getUserId())
+                .orElseThrow(() -> new EntityRuntimeException(String.format("Usuário com identificador %s não existe.", paymentCreateDto.getUserId())));
+
         List<Month> months = monthRepository.findAllById(paymentCreateDto.getMonthIds());
         if (months.isEmpty()) {
-            throw new IllegalArgumentException("Nenhum mês válido encontrado");
+            throw new IllegalArgumentException("Nenhum mês válido encontrado.");
         }
 
-        // Cálculo do valor pago
         BigDecimal fixedAmount = BigDecimal.valueOf(5000);
         BigDecimal amountPaid = calculateAmountPaid(fixedAmount, months.size());
 
-        // Criação e persistência do pagamento
+
+
+       /* for (Month month : months) {
+            String monthAlreadyPaid = paymentRepository.findFirstMonthAlreadyPaidByMonthAndYearAndUser(user.getId(), Collections.singletonList(month.getId()), paymentCreateDto.getYear());
+            if (monthAlreadyPaid != null) {
+                throw new IllegalArgumentException(String.format("O mês %s já foi pago pelo usuário.", monthAlreadyPaid));
+            }
+        }*/
+
+        for (Month month : months) {
+            List<String> monthsAlreadyPaid = paymentRepository.findAllMonthsAlreadyPaidByMonthAndYearAndUser(
+                    user.getId(), paymentCreateDto.getMonthIds(), paymentCreateDto.getYear());
+            if (!monthsAlreadyPaid.isEmpty()) {
+                throw new IllegalArgumentException(String.format("O(s) mês(es) %s já foram pagos pelo usuário.", String.join(", ", monthsAlreadyPaid)));
+            }
+        }
+
         Payment payment = new Payment();
         payment.setUser(user);
         payment.setMonths(months);
@@ -45,9 +63,7 @@ public class PaymentService {
         payment.setAmountPaid(amountPaid);
         payment.setPaid(true);
 
-         paymentRepository.save(payment);
-
-         return payment;
+        return paymentRepository.save(payment);
     }
 
     private BigDecimal calculateAmountPaid(BigDecimal fixedAmount, int numberOfMonths) {
@@ -56,4 +72,5 @@ public class PaymentService {
         }
         return fixedAmount.multiply(BigDecimal.valueOf(numberOfMonths));
     }
+
 }

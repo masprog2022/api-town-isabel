@@ -4,6 +4,7 @@ import com.masprogtechs.apitownisabel.dtos.PaymentCreateDto;
 import com.masprogtechs.apitownisabel.dtos.UserCreateDto;
 import com.masprogtechs.apitownisabel.dtos.UserResponseDto;
 import com.masprogtechs.apitownisabel.mapper.UserMapper;
+import com.masprogtechs.apitownisabel.models.ErrorMessage;
 import com.masprogtechs.apitownisabel.models.Payment;
 import com.masprogtechs.apitownisabel.models.User;
 import com.masprogtechs.apitownisabel.services.PaymentService;
@@ -17,7 +18,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
+
 
     @Operation(summary = "Efectuar pagamento", description = "Efectuar pagamento. " +
             "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
@@ -37,7 +43,8 @@ public class PaymentController {
             })
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Payment> createUser(@RequestBody @Valid PaymentCreateDto paymentCreateDto){
+    public ResponseEntity<Payment> createPayment(@RequestBody @Valid PaymentCreateDto paymentCreateDto) {
+
         Payment payment = paymentService.makePayment(paymentCreateDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(payment);
     }
