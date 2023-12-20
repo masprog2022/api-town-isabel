@@ -39,6 +39,9 @@ public class Payment {
     private BigDecimal amountPaid;
     private Boolean paid;
 
+    @OneToOne(mappedBy = "payment")
+    private Attached attached;
+
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

@@ -33,8 +33,10 @@ public class PaymentService {
 
         List<Month> months = monthRepository.findAllById(paymentCreateDto.getMonthIds());
         if (months.isEmpty()) {
-            throw new IllegalArgumentException("Nenhum mês válido encontrado.");
+            throw new IllegalArgumentException("Mês não existe.");
         }
+
+
 
         BigDecimal fixedAmount = BigDecimal.valueOf(5000);
         BigDecimal amountPaid = calculateAmountPaid(fixedAmount, months.size());
@@ -52,7 +54,7 @@ public class PaymentService {
             List<String> monthsAlreadyPaid = paymentRepository.findAllMonthsAlreadyPaidByMonthAndYearAndUser(
                     user.getId(), paymentCreateDto.getMonthIds(), paymentCreateDto.getYear());
             if (!monthsAlreadyPaid.isEmpty()) {
-                throw new IllegalArgumentException(String.format("O(s) mês(es) %s já foram pagos pelo usuário.", String.join(", ", monthsAlreadyPaid)));
+                throw new IllegalArgumentException(String.format("O(s) mês(es) de %s já foram pagos pelo usuário.", String.join(", ", monthsAlreadyPaid)));
             }
         }
 
